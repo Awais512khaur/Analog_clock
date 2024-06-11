@@ -6,42 +6,47 @@ const description = document.querySelector('.description');
 const humidity = document.getElementById('humidity');
 const wind = document.getElementById('wind');
 const locationnotfound = document.querySelector('.locationnotfound');
-async function checkweather(city)
-{
+
+async function checkWeather(city) {
     const apikey = "38c3cdb1e6fb4b4ee10150992a2d241b";
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
-    const weatherdata = await fetch(`${url}`).then(response=> response.json());
-    if(weatherdata.cod === `404`)
-    {
+    const weatherdata = await fetch(url).then(response => response.json());
+
+    if (weatherdata.cod === `404`) {
         locationnotfound.style.display = "flex";
         console.log("Error");
         return;
     }
-    temprature.innerHTML = `${Math.round (weatherdata.main.temp - 273.15)}`;
-    description.innerHTML =  `${weatherdata.weather[0].description}`;
-    console.log(weatherdata);
-    humidity.innerHTML = `${weatherdata.main.humidity}%`;
-    wind.innerHTML = `${weatherdata.wind}Km/H`;
 
-    switch(weatherdata.weather[0].main){
-        case 'cloud':
+    locationnotfound.style.display = "none"; // Hide the location not found message if the city is found
+
+    temprature.innerHTML = `${Math.round(weatherdata.main.temp - 273.15)}°C`;
+    description.innerHTML = `${weatherdata.weather[0].description}`;
+    humidity.innerHTML = `${weatherdata.main.humidity}%`;
+    wind.innerHTML = `${weatherdata.wind.speed} Km/H`; // Correctly display the wind speed
+
+    switch (weatherdata.weather[0].main.toLowerCase()) {
+        case 'clouds':
             weatherimage.src = "images/cloud.png";
             break;
-            case 'clear':
+        case 'clear':
             weatherimage.src = "images/clear.png";
             break;
-            case 'mist':
+        case 'mist':
             weatherimage.src = "images/mist.png";
             break;
-            case 'rain':
+        case 'rain':
             weatherimage.src = "images/rain.png";
             break;
-            case 'snow':
+        case 'snow':
             weatherimage.src = "images/snow.png";
             break;
-        }
+        default:
+            weatherimage.src = "images/default.png"; // A default image if none match
+            break;
+    }
 }
-searchbtn.addEventListener('click',()=>
-{
-    checkweather(inputbox.value);
-})
+
+searchbtn.addEventListener('click', () => {
+    checkWeather(inputbox.value);
+});
